@@ -10,7 +10,7 @@ public interface DepartmentService {
 
     Department getDepartmentByName(String deptName);
 
-    void postDepartments(List<DepartmentDTO> departments);
+    List<Department> postDepartments(List<DepartmentDTO> departments);
 
     void updateDepartments(List<DepartmentDTO> departments);
 

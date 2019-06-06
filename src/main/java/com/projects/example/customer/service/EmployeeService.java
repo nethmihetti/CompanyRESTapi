@@ -9,7 +9,7 @@ public interface EmployeeService {
 
     List<Employee> getAllEmployeesByDept(String deptName);
 
-    void postNewEmployee (List<EmployeeDTO> employeeList);
+    List<Employee> postNewEmployee (List<EmployeeDTO> employeeList);
 
     //void updateEmployee(List<EmployeeDTO> employeeDTOList);
 

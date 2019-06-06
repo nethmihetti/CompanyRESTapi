@@ -2,19 +2,28 @@ package com.projects.example.customer.service.impl;
 
 import com.projects.example.customer.dao.DepartmentRepository;
 import com.projects.example.customer.dao.EmployeeRepository;
+import com.projects.example.customer.model.Department;
 import com.projects.example.customer.model.Employee;
 import com.projects.example.customer.model.EmployeeDTO;
 import com.projects.example.customer.service.EmployeeService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class EmployeeServiceImpl implements EmployeeService {
 
-    @Autowired
-    EmployeeRepository employeeRepository;
+
+    private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
+
+    EmployeeServiceImpl(EmployeeRepository employeeRepository, DepartmentRepository departmentRepository) {
+        this.employeeRepository = employeeRepository;
+        this.departmentRepository = departmentRepository;
+    }
 
 
 
@@ -26,8 +35,25 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public void postNewEmployee (List<EmployeeDTO> employeeList) {
-        employeeList.forEach(employeeDTO -> employeeRepository.postEmployee(employeeDTO));
+    public List<Employee> postNewEmployee (List<EmployeeDTO> employeeList) {
+
+        List<Employee> returnEmployees = new ArrayList<>();
+
+        employeeList.forEach(employeeDTO -> {
+
+            Department department = departmentRepository.findDepartmentByDeptName
+                    (employeeDTO.getDepartment().getDepartmentName());
+
+            Employee employee = new Employee();
+            employee.setFirstName(employeeDTO.getFirstName());
+            employee.setLastName(employeeDTO.getLastName());
+            employee.setDesignation(employeeDTO.getDesignation());
+            employee.setDepartment(department);
+            returnEmployees.add(employeeRepository.save(employee));
+
+        });
+
+        return returnEmployees;
     }
 
    /* @Override

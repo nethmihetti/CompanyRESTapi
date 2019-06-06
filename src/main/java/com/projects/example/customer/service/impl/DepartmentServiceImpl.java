@@ -4,17 +4,22 @@ import com.projects.example.customer.dao.DepartmentRepository;
 import com.projects.example.customer.model.Department;
 import com.projects.example.customer.model.DepartmentDTO;
 import com.projects.example.customer.service.DepartmentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 @Service
+@Transactional
 public class DepartmentServiceImpl implements DepartmentService {
 
-    @Autowired
-    DepartmentRepository departmentRepository;
+    private final DepartmentRepository departmentRepository;
+
+    DepartmentServiceImpl(DepartmentRepository departmentRepository) {
+        this.departmentRepository = departmentRepository;
+    }
 
     @Override
     public Department getDepartmentByName(String deptName) {
@@ -22,13 +27,23 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public void postDepartments(List<DepartmentDTO> departments) {
-        departments.forEach(departmentDTO -> departmentRepository.postDepartment(departmentDTO));
+    public List<Department> postDepartments(List<DepartmentDTO> departments) {
+
+        List<Department> returnDepartments = new ArrayList<>();
+
+        departments.forEach(departmentDTO -> {
+            Department department = new Department();
+            department.setDeptName(departmentDTO.getDepartmentName());
+            department.setLocation(departmentDTO.getLocation());
+            returnDepartments.add(departmentRepository.save(department));
+        });
+
+        return returnDepartments;
     }
 
     @Override
     public void updateDepartments(List<DepartmentDTO> departments) {
-        departments.forEach(departmentDTO -> departmentRepository.updateDepartment(departmentDTO));
+        departments.forEach(departmentRepository::updateDepartment);
     }
 
 }
